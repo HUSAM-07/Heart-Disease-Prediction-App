@@ -5,6 +5,15 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 
+try:
+    import sklearn
+except ModuleNotFoundError:
+    print("Please install the 'scikit-learn' library before running this script. You can do this by running the following command:")
+    print("\n pip install -U scikit-learn \n")
+    exit()
+
+# The rest of your code goes here
+
 df = pd.read_csv('dataset.csv')
 
 # Check the features in the dataframe
