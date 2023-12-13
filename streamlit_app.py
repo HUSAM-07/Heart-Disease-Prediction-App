@@ -1,148 +1,52 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+import pandas as pd
 
-# Load the dataset
-heart_data = pd.read_csv('dataset.csv')
+df = pd.read_csv('dataset.csv')
 
-# Page layout
-st.set_page_config(
-    page_title="Heart Disease Prediction App",
-    page_icon="❤️",
-    layout="wide",
-)
+# Check the features in the dataframe
+print("Features: ", df.columns)
 
-# Title
-st.title("Heart Disease Prediction App")
-# Sidebar
-st.sidebar.subheader("Dataset Exploration")
+X = df.iloc[:, :-1].values
+y = df.iloc[:, -1].values
 
-# Show dataset
-if st.sidebar.checkbox("Show Dataset"):
-    st.dataframe(heart_data)
+# Splitting the data into the Training set and Test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-# Explore correlation between features
-st.sidebar.subheader("Correlation Matrix Heatmap")
+# Feature Scaling
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
 
-# Correlation matrix
-correlation_matrix = heart_data.corr()
-top_corr_features = correlation_matrix.index
-plt.figure(figsize=(20, 20))
-sns.heatmap(heart_data[top_corr_features].corr(), annot=True, cmap="RdYlGn")
-st.pyplot()
+# Define the model
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
 
-# Data preprocessing
-st.sidebar.subheader("Data Preprocessing")
+# Create an interface for the user to input their details
+with st.form(key='user_details'):
+    age = st.slider('Age', 1, 100, 30)
+    sex = st.selectbox('Sex', [0, 1])
+    cp = st.selectbox('Chest Pain Type', [0, 1, 2, 3])
+    trestbps = st.slider('Resting Blood Pressure', 50, 250, 100)
+    chol = st.slider('Serum Cholestoral', 50, 300, 150)
+    fbs = st.selectbox('Fasting Blood Sugar', [0, 1])
+    restecg = st.selectbox('Resting Electrocardiographic Results', [0, 1, 2])
+    thalach = st.slider('Maximum Heart Rate Achieved', 50, 200, 120)
+    exang = st.selectbox('Exercise-Induced Angina', [0, 1])
+    oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', 0.0, 4.0, 0.5)
+    slope = st.selectbox('Slope of the Peak Exercise ST Segment', [0, 1, 2])
+    ca = st.selectbox('Number of Major Vessels Colored by Fluoroscopy', [0, 1, 2, 3])
+    thal = st.selectbox('Thalassemia', [0, 1, 2, 3])
+    submit_button = st.form_submit_button(label='Submit')
 
-# Dummies
-heart_data = pd.get_dummies(heart_data, columns=['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal'])
-
-# Feature scaling
-scaler = StandardScaler()
-columns_to_scale = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
-heart_data[columns_to_scale] = scaler.fit_transform(heart_data[columns_to_scale])
-# Model building and evaluation
-st.sidebar.subheader("Model Building and Evaluation")
-
-# KNN model
-knn_scores = []
-X = heart_data.drop('target', axis=1)
-y = heart_data['target']
-for k in range(1, 21):
-    knn_classifier = KNeighborsClassifier(n_neighbors=k)
-    score = cross_val_score(knn_classifier, X, y, cv=10)
-    knn_scores.append(score.mean())
-
-# Plot the scores for different K values
-st.subheader("K Neighbors Classifier scores for different K values")
-fig, ax = plt.subplots()
-ax.plot([k for k in range(1, 21)], knn_scores, color='red')
-for i in range(1, 21):
-    ax.text(i, knn_scores[i - 1], (i, knn_scores[i - 1]))
-ax.set_xticks([k for k in range(1, 21)])
-ax.set_xlabel('Number of Neighbors (K)')
-ax.set_ylabel('Scores')
-ax.set_title('K Neighbors Classifier scores for different K values')
-st.pyplot(fig)
-# User input and prediction
-def predict_heart_rate():
-    user_input = {
-        'age': st.number_input('Age', min_value=20, max_value=80),
-        'sex': st.selectbox('Sex', ['Male', 'Female']),
-        # ... add input for other features ...
-    }
-
-    # Preprocess user input
-    user_input_df = pd.DataFrame(user_input, index=[0])
-    user_input_df = pd.get_dummies(user_input_df, columns=['sex'])
-
-    # Apply scaling to numerical features
-    user_input_df[columns_to_scale] = scaler.transform(user_input_df[columns_to_scale])
-
-    # Predict heart rate
-    prediction = knn_classifier.predict(user_input_df)[0]
-
-    # Display prediction
-    st.write(f"Predicted Heart Rate: {prediction:.2f} bpm")
-    st.write(f"Note: This prediction is for informational purposes only and should not be used for medical diagnosis.")
-
-# Button to trigger prediction
-if st.button("Predict Heart Rate"):
-    predict_heart_rate()
-# Output and Visualization
-
-def visualize_results(user_input_df, prediction):
-    # Plot heart rate distribution
-    heart_rates = heart_data['target']
-    fig, ax = plt.subplots()
-    ax.hist(heart_rates, bins=20, edgecolor='black')
-    ax.axvline(prediction, color='red', linestyle='--', label=f"Predicted: {prediction:.2f} bpm")
-    ax.set_xlabel('Heart Rate (bpm)')
-    ax.set_ylabel('Frequency')
-    ax.set_title('Distribution of Heart Rate in Dataset')
-    ax.legend()
-    st.pyplot(fig)
-
-    # Show nearest neighbors
-    distances, indices = knn_classifier.kneighbors(user_input_df)
-    nearest_neighbors = heart_data.iloc[indices[0]]
-    st.subheader("Nearest Neighbors:")
-    st.dataframe(nearest_neighbors)
-
-# User Input and Prediction
-
-def predict_heart_rate():
-    global user_input_df
-    user_input = {
-        'age': st.number_input('Age', min_value=20, max_value=80),
-        'sex': st.selectbox('Sex', ['Male', 'Female']),
-        # ... add input for other features ...
-    }
-
-    # Preprocess user input
-    user_input_df = pd.DataFrame(user_input, index=[0])
-    user_input_df = pd.get_dummies(user_input_df, columns=['sex'])
-
-    # Apply scaling to numerical features
-    user_input_df[columns_to_scale] = scaler.transform(user_input_df[columns_to_scale])
-
-    # Predict heart rate
-    global prediction
-    prediction = knn_classifier.predict(user_input_df)[0]
-
-    # Display prediction
-    st.write(f"Predicted Heart Rate: {prediction:.2f} bpm")
-    st.write(f"Note: This prediction is for informational purposes only and should not be used for medical diagnosis.")
-
-    # Run visualization function
-    visualize_results(user_input_df, prediction)
-
-# Button to trigger prediction
-if st.button("Predict Heart Rate"):
-    predict_heart_rate()
-
+if submit_button:
+    input_data = [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]]
+    input_data = sc.transform(input_data)
+    prediction = knn.predict(input_data)
+    if prediction == 1:
+        st.write('Heart rate is above 100 bpm.')
+    else:
+        st.write('Heart rate is not above 100 bpm.')
