@@ -25,6 +25,9 @@ X_test = sc.transform(X_test)
 knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(X_train, y_train)
 
+#App Settings and Title
+st.title('Heart Rate Prediction using Machine Learning')
+
 # Create an interface for the user to input their details
 with st.form(key='user_details'):
     age = st.slider('Age', 1, 100, 30)
