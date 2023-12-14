@@ -1,95 +1,52 @@
-import pandas as pd
+import streamlit as st
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-import streamlit as st
+import pandas as pd
 
-st.title('Heart Disease Prediction App')
-
-sex = st.selectbox('Sex', ('Male', 'Female'))
-cp = st.selectbox('Chest Pain Type', ('Typical Angina', 'Atypical Angina', 'Non-anginal Pain', 'Asymptomatic'))
-fbs = st.selectbox('Fasting Blood Sugar', ('> 120 mg/dl', '< 120 mg/dl'))
-restecg = st.selectbox('Resting ECG', ('Normal', 'ST-T wave abnormality', 'Left ventricular hypertrophy'))
-exang = st.selectbox('Exercise-induced Angina', ('Yes', 'No'))
-slope = st.selectbox('Slope of the Peak Exercise ST Segment', ('Upsloping', 'Flat', 'Downsloping'))
-ca = st.selectbox('ST Segment Number Abnormal', ('0', '1', '2', '3', '4 or more'))
-thal = st.selectbox('Thalassemia', ('fixed defect', 'reversable defect', 'normal'))
-age = st.slider('Age', 20, 100, 30)
-trestbps = st.slider('Resting Blood Pressure', 60, 250, 90)
-chol = st.slider('Serum Cholestoral in mg/dl', 100, 600, 200)
-thalach = st.slider('Maximum Heart Rate Achieved', 50, 200, 120)
-oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', 0.0, 8.0, 1.0)
-
-
-def predict_heart_rate(sex, cp, fbs, restecg, exang, slope, ca, thal, age, trestbps, chol, thalach, oldpeak):
-    feature_vector = np.array([sex, cp, fbs, restecg, exang, slope, ca, thal, age, trestbps, chol, thalach, oldpeak])
-    feature_vector = feature_vector.reshape(1, -1)
-    prediction = knn_classifier.predict(feature_vector)
-    return prediction[0]
-
-# Load your data into a DataFrame
 df = pd.read_csv('dataset.csv')
 
-# Remove rows with non-numeric values in 'target' column
-df = df[df['target'].apply(lambda x: str(x).isnumeric())]
+# Check the features in the dataframe
+print("Features: ", df.columns)
 
-# Convert the 'target' column to numeric type
-df['target'] = pd.to_numeric(df['target'])
+X = df.iloc[:, :-1].values
+y = df.iloc[:, -1].values
 
+# Splitting the data into the Training set and Test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-# Load the dataset
-df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data', header=None)
+# Feature Scaling
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
 
-# Assign the features and the target to the corresponding variables
-X = df.iloc[:, :-1] # Features
-y = df.iloc[:, -1] # Target
+# Define the model
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
 
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Create an interface for the user to input their details
+with st.form(key='user_details'):
+    age = st.slider('Age', 1, 100, 30)
+    sex = st.selectbox('Sex', [0, 1])
+    cp = st.selectbox('Chest Pain Type', [0, 1, 2, 3])
+    trestbps = st.slider('Resting Blood Pressure', 50, 250, 100)
+    chol = st.slider('Serum Cholestoral', 50, 300, 150)
+    fbs = st.selectbox('Fasting Blood Sugar', [0, 1])
+    restecg = st.selectbox('Resting Electrocardiographic Results', [0, 1, 2])
+    thalach = st.slider('Maximum Heart Rate Achieved', 50, 200, 120)
+    exang = st.selectbox('Exercise-Induced Angina', [0, 1])
+    oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', 0.0, 4.0, 0.5)
+    slope = st.selectbox('Slope of the Peak Exercise ST Segment', [0, 1, 2])
+    ca = st.selectbox('Number of Major Vessels Colored by Fluoroscopy', [0, 1, 2, 3])
+    thal = st.selectbox('Thalassemia', [0, 1, 2, 3])
+    submit_button = st.form_submit_button(label='Submit')
 
-# Create the kNN classifier
-knn_classifier = KNeighborsClassifier(n_neighbors=5)
-
-# Train the kNN classifier
-knn_classifier.fit(X_train, y_train)
-
-# Now, the 'X' variable is defined and can be used to fit the kNN classifier
-
-# Load the trained KNN classifier
-knn_classifier = KNeighborsClassifier(n_neighbors=5)
-knn_classifier.fit(X, y)
-
-# Get user input
-user_input = {'sex': [sex],
-              'cp': [cp],
-              'fbs': [fbs],
-              'restecg': [restecg],
-              'exang': [exang],
-              'slope': [slope],
-              'ca': [ca],
-              'thal': [thal],
-              'age': [age],
-              'trestbps': [trestbps],
-              'chol': [chol],
-              'thalach': [thalach],
-              'oldpeak': [oldpeak]}
-
-# Create a dataframe
-user_df = pd.DataFrame(user_input)
-
-# Convert categorical values to numerical values
-user_df = user_df.replace({'sex': {'Male': 1, 'Female': 0},
-                           'cp': {'Typical Angina': 0, 'Atypical Angina': 1, 'Non-anginal Pain': 2, 'Asymptomatic': 3},
-                           'fbs': {'> 120 mg/dl': 1, '< 120 mg/dl': 0},
-                           'restecg': {'Normal': 0, 'ST-T wave abnormality': 1, 'Left ventricular hypertrophy': 2},
-                           'exang': {'Yes': 1, 'No': 0},
-                           'slope': {'Upsloping': 0, 'Flat': 1, 'Downsloping': 2},
-                           'ca': {'0': 0, '1': 1, '2': 2, '3': 3, '4 or more': 4},
-                           'thal': {'fixed defect': 0, 'reversable defect': 1, 'normal': 2}}
-                          )
-
-# Print the prediction
-prediction = predict_heart_rate(sex, cp, fbs, restecg, exang, slope, ca, thal, age, trestbps, chol, thalach, oldpeak)
-st.write('The predicted probability of heart disease is:', prediction)
-
+if submit_button:
+    input_data = [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]]
+    input_data = sc.transform(input_data)
+    prediction = knn.predict(input_data)
+    if prediction == 1:
+        st.write('Heart rate is above 100 bpm.')
+    else:
+        st.write('Heart rate is not above 100 bpm.')
