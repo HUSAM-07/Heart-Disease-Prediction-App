@@ -50,3 +50,4 @@ if submit_button:
         st.write('Heart rate is above 100 bpm.')
     else:
         st.write('Heart rate is not above 100 bpm.')
+st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
