@@ -46,13 +46,14 @@ explanations = {
 }
 
 # Create an interface for the user to input their details
-user_input = {}
 with st.form(key='user_details'):
+    user_input = {}
     for feature in explanations:
         if feature != 'sex' and feature != 'fbs' and feature != 'exang':
             user_input[feature] = st.slider(explanations[feature], min_value=int(min(df[feature])), max_value=int(max(df[feature])), value=int(df[feature].median()))
         else:
             user_input[feature] = st.selectbox(explanations[feature], options=[0, 1], index=df[feature].mode()[0])
+    
     submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
@@ -63,4 +64,5 @@ if submit_button:
         st.write('High Probability of presence of Heart Disease.')
     else:
         st.write('Low Probability of presence of Heart Disease.')
+
 st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
