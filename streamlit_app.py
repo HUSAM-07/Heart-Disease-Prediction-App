@@ -46,13 +46,17 @@ explanations = {
 }
 
 # Create an interface for the user to input their details
+user_input = {}
 with st.form(key='user_details'):
     for feature in explanations:
-        value = st.slider(explanations[feature], min_value=min(df[feature]), max_value=max(df[feature]), value=df[feature].median()) if feature != 'sex' and feature != 'fbs' and feature != 'exang' else st.selectbox(explanations[feature], options=[0, 1], index=df[feature].mode()[0])
+        if feature != 'sex' and feature != 'fbs' and feature != 'exang':
+            user_input[feature] = st.slider(explanations[feature], min_value=int(min(df[feature])), max_value=int(max(df[feature])), value=int(df[feature].median()))
+        else:
+            user_input[feature] = st.selectbox(explanations[feature], options=[0, 1], index=df[feature].mode()[0])
     submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
-    input_data = [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]]
+    input_data = [[user_input[feature] for feature in explanations]]
     input_data = sc.transform(input_data)
     prediction = knn.predict(input_data)
     if prediction == 1:
