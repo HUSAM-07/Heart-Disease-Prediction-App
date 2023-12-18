@@ -50,7 +50,7 @@ if submit_button:
     input_data = sc.transform(input_data)
     prediction = knn.predict(input_data)
     if prediction == 1:
-        st.write('Heart rate is above 100 bpm.')
+        st.write('High Probability of presence of Heart Disease.')
     else:
-        st.write('Heart rate is not above 100 bpm.')
+        st.write('Low Probability of presence of Heart Disease.')
 st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
