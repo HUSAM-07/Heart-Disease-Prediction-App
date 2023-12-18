@@ -32,7 +32,8 @@ st.title('Heart Rate Prediction using Machine Learning')
 with st.form(key='user_details'):
     age = st.slider('Age', 1, 100, 30)
     sex = st.selectbox('Sex (0 = female, 1 = male)', [0, 1])
-    cp = st.selectbox('Chest Pain Type', [0, 1, 2, 3])
+    cp = st.selectbox('Chest Pain Type Value 0: asymptomatic | Value 1: atypical angina | Value 2: non-anginal pain | Value 3: typical angina', [0, 1, 2, 3])
+
     trestbps = st.slider('Resting Blood Pressure', 50, 250, 100)
     chol = st.slider('Serum Cholestoral', 50, 300, 150)
     fbs = st.selectbox('Fasting Blood Sugar', [0, 1])
