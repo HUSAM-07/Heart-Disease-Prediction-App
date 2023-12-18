@@ -51,7 +51,7 @@ if submit_button:
     input_data = sc.transform(input_data)
     prediction = knn.predict(input_data)
     if prediction == 1:
-        st.write('High Probability of presence of Heart Disease.')
-    else:
         st.write('Low Probability of presence of Heart Disease.')
+    else:
+        st.write('High Probability of presence of Heart Disease.')
 st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
