@@ -26,7 +26,7 @@ knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(X_train, y_train)
 
 #App Settings and Title
-st.title('Heart Rate & Disease Prediction using Machine Learning')
+st.title('Heart Rate and Disease Prediction using Machine Learning')
 
 # Create an interface for the user to input their details
 with st.form(key='user_details'):
