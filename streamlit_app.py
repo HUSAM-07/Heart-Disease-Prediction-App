@@ -37,13 +37,13 @@ with st.form(key='user_details'):
     trestbps = st.slider('Resting Blood Pressure', 50, 250, 100)
     chol = st.slider('Serum Cholestoral', 50, 300, 150)
     fbs = st.selectbox('Fasting Blood Sugar 0: less than 120mg/dL; 1: more than 120mg/dL', [0, 1])
-    restecg = st.selectbox('Resting Electrocardiographic Results', [0, 1, 2])
+    restecg = st.selectbox('Resting Electrocardiographic Results; 0: Normal; 1: Having ST-T wave abnormality; 2: Showing Probable or definite left verticular hypertrophy', [0, 1, 2])
     thalach = st.slider('Maximum Heart Rate Achieved', 50, 200, 120)
-    exang = st.selectbox('Exercise-Induced Angina', [0, 1])
+    exang = st.selectbox('Exercise-Induced Angina 0: absence; 1: Presense', [0, 1])
     oldpeak = st.slider('ST Depression Induced by Exercise Relative to Rest', 0.0, 4.0, 0.5)
-    slope = st.selectbox('Slope of the Peak Exercise ST Segment', [0, 1, 2])
+    slope = st.selectbox('Slope of the Peak Exercise ST Segment 0: Upsloping; 1: flat; 2: down sloping', [0, 1, 2])
     ca = st.selectbox('Number of Major Vessels Colored by Fluoroscopy', [0, 1, 2, 3])
-    thal = st.selectbox('Thalassemia', [0, 1, 2, 3])
+    thal = st.selectbox('Thalassemia 0: Normal; 1: Fixed defect; 2: reversible defect', [0, 1, 2, 3])
     submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
