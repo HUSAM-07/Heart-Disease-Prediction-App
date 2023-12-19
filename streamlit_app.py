@@ -36,7 +36,7 @@ with st.form(key='user_details'):
 
     trestbps = st.slider('Resting Blood Pressure', 50, 250, 100)
     chol = st.slider('Serum Cholestoral', 50, 300, 150)
-    fbs = st.selectbox('Fasting Blood Sugar', [0, 1])
+    fbs = st.selectbox('Fasting Blood Sugar 0: less than 120mg/dL; 1: more than 120mg/dL', [0, 1])
     restecg = st.selectbox('Resting Electrocardiographic Results', [0, 1, 2])
     thalach = st.slider('Maximum Heart Rate Achieved', 50, 200, 120)
     exang = st.selectbox('Exercise-Induced Angina', [0, 1])
