@@ -54,4 +54,5 @@ if submit_button:
         st.write('Low Probability of presence of Heart Disease.')
     else:
         st.write('High Probability of presence of Heart Disease.')
+st.caption('It is advisable to refer to authorized health professionals and take this as a reference only')
 st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
