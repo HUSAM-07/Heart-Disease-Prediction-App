@@ -26,7 +26,7 @@ knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(X_train, y_train)
 
 #App Settings and Title
-st.title('Heart Rate and Disease Prediction using Machine Learning')
+st.title('Heart Rate and Disease Prediction')
 
 # Create an interface for the user to input their details
 with st.form(key='user_details'):
@@ -55,4 +55,3 @@ if submit_button:
     else:
         st.write('High Probability of presence of Heart Disease.')
 st.caption('It is advisable to refer to authorized health professionals and take this as a reference only')
-st.caption('This Application is Developed by Mohammed Zubair Ahmed & Mohammed Husamuddin')
